@@ -13,14 +13,17 @@
 @property (nonatomic, assign) CGFloat r;
 @property (nonatomic, assign) CGFloat maxValue;
 @property (nonatomic, assign) CGFloat minValue;
+@property (nonatomic, assign) CGFloat lineWidth;
 @property (nonatomic, assign) BOOL drawPoints;
 @property (nonatomic, assign) BOOL fillArea;
 @property (nonatomic, assign) BOOL showLegend;
 @property (nonatomic, assign) BOOL showStepText;
+@property (nonatomic, strong) UIColor *stepLineColor;
 @property (nonatomic, assign) CGFloat colorOpacity;
 @property (nonatomic, strong) UIColor *backgroundLineColorRadial;
 @property (nonatomic, strong) NSArray *dataSeries;
 @property (nonatomic, strong) NSArray *attributes;
+@property (nonatomic, strong) UIColor *attributeColor;
 @property (nonatomic, assign) NSUInteger steps;
 @property (nonatomic, assign) CGPoint centerPoint;
 @property (nonatomic, strong) UIColor *backgroundFillColor;

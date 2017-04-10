@@ -53,6 +53,7 @@
     _fillArea = NO;
     _minValue = 0;
     _colorOpacity = 1.0;
+    _lineWidth = 1.0/[UIScreen mainScreen].scale;
     _backgroundLineColorRadial = [UIColor darkGrayColor];
     _backgroundFillColor = [UIColor whiteColor];
 
@@ -62,10 +63,14 @@
     _legendView.colors = [NSMutableArray array];
     _attributes = @[@"you", @"should", @"set", @"these", @"data", @"titles,",
                         @"this", @"is", @"just", @"a", @"placeholder"];
+    _attributeColor = [UIColor lightGrayColor];
+    
+    _stepLineColor = [UIColor lightGrayColor];
 
     _scaleFont = [UIFont systemFontOfSize:ATTRIBUTE_TEXT_SIZE];
     
     _clockwise = YES;
+    
 }
 
 - (void)setShowLegend:(BOOL)showLegend {
@@ -137,8 +142,11 @@
     
 	CGContextRef context = UIGraphicsGetCurrentContext();
     
+    CGContextSetLineWidth(context, _lineWidth);
+    
 	//draw attribute text
-	CGFloat height = [self.scaleFont lineHeight];
+    CGContextSaveGState(context);
+	
 	CGFloat padding = 2.0;
 	for (int i = 0; i < _numOfV; i++) {
 		NSString *attributeName = _attributes[i];
@@ -146,6 +154,7 @@
         
 		CGSize attributeTextSize = JY_TEXT_SIZE(attributeName, self.scaleFont);
 		NSInteger width = attributeTextSize.width;
+        CGFloat height = attributeTextSize.height;
         
 		CGFloat xOffset = pointOnEdge.x >= _centerPoint.x ? width / 2.0 + padding : -width / 2.0 - padding;
 		CGFloat yOffset = pointOnEdge.y >= _centerPoint.y ? height / 2.0 + padding : -height / 2.0 - padding;
@@ -157,6 +166,7 @@
             [paragraphStyle setAlignment:NSTextAlignmentCenter];
 
             NSDictionary *attributes = @{ NSFontAttributeName: self.scaleFont,
+                                          NSForegroundColorAttributeName:self.attributeColor,
                                           NSParagraphStyleAttributeName: paragraphStyle };
 
             [attributeName drawInRect:CGRectMake(legendCenter.x - width / 2.0,
@@ -171,12 +181,14 @@
                                                  width,
                                                  height)
                              withFont:self.scaleFont
-                        lineBreakMode:NSLineBreakByClipping
+                        lineBreakMode:NSLineBreakByWordWrapping
                             alignment:NSTextAlignmentCenter];
         }
     }
+    CGContextRestoreGState(context);
 
     //draw background fill color
+    CGContextSaveGState(context);
     [_backgroundFillColor setFill];
     CGContextMoveToPoint(context, _centerPoint.x, _centerPoint.y - _r);
     for (int i = 1; i <= _numOfV; ++i) {
@@ -184,12 +196,12 @@
                                 _centerPoint.y - _r * cos(i * radPerV));
     }
     CGContextFillPath(context);
+    CGContextRestoreGState(context);
 
 	//draw steps line
 	//static CGFloat dashedPattern[] = {3,3};
-	//TODO: make this color a variable
-	[[UIColor lightGrayColor] setStroke];
 	CGContextSaveGState(context);
+    [_stepLineColor setStroke];
 	for (int step = 1; step <= _steps; step++) {
 		for (int i = 0; i <= _numOfV; ++i) {
 			if (i == 0) {
@@ -206,6 +218,7 @@
 	CGContextRestoreGState(context);
     
 	//draw lines from center
+    CGContextSaveGState(context);
 	[_backgroundLineColorRadial setStroke];
 	for (int i = 0; i < _numOfV; i++) {
 		CGContextMoveToPoint(context, _centerPoint.x, _centerPoint.y);
@@ -213,12 +226,13 @@
 		                        _centerPoint.y - _r * cos(i * radPerV));
 		CGContextStrokePath(context);
 	}
+    CGContextRestoreGState(context);
 	//end of base except axis label
     
     
-	CGContextSetLineWidth(context, 2.0);
     
 	//draw lines
+    CGContextSaveGState(context);
     if (_numOfV > 0) {
         for (int serie = 0; serie < [_dataSeries count]; serie++) {
             if (self.fillArea) {
@@ -263,6 +277,7 @@
             }
         }
     }
+    CGContextRestoreGState(context);
     
 	if (self.showStepText) {
 		//draw step label text, alone y axis

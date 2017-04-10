@@ -23,11 +23,11 @@
 
 	p = [[JYRadarChart alloc] initWithFrame:CGRectMake(30, 20, 200, 200)];
 
-	NSArray *a1 = @[@(81), @(97), @(87), @(60), @(65), @(77)];
-	NSArray *a2 = @[@(91), @(87), @(33), @(77), @(78), @(96)];
-	p.dataSeries = @[a1, a2];
-	p.steps = 1;
-	p.showStepText = YES;
+	NSArray *a1 = @[@(81), @(97), @(87), @(60), @(45)];
+//	NSArray *a2 = @[@(91), @(87), @(33), @(77), @(78), @(96)];
+	p.dataSeries = @[a1];
+	p.steps = 5;
+	p.showStepText = NO;
 	p.backgroundColor = [UIColor whiteColor];
 	p.r = 60;
 	p.minValue = 20;
@@ -35,14 +35,17 @@
 	p.fillArea = YES;
 	p.colorOpacity = 0.7;
     p.backgroundFillColor = [UIColor colorWithRed:0.9 green:0.9 blue:0.9 alpha:1];
-	p.attributes = @[@"Attack", @"Defense", @"Speed", @"HP", @"MP", @"IQ"];
+    p.backgroundLineColorRadial = [UIColor redColor];
+    p.stepLineColor = [UIColor blueColor];
+    p.attributeColor = [UIColor redColor];
+	p.attributes = @[@"Attack\n(回撤)", @"Defense\n(估值)", @"Speed", @"HP", @"MP", @"IQ"];
 	p.showLegend = YES;
 	[p setTitles:@[@"archer", @"footman"]];
-	[p setColors:@[[UIColor yellowColor], [UIColor purpleColor]]];
+	[p setColors:@[[UIColor colorWithRed:255/255.f green:130/255.f blue:0 alpha:0.7], [UIColor purpleColor]]];
 	[self.view addSubview:p];
 
 
-	[NSTimer scheduledTimerWithTimeInterval:1.5 target:self selector:@selector(updateData) userInfo:nil repeats:YES];
+//	[NSTimer scheduledTimerWithTimeInterval:1.5 target:self selector:@selector(updateData) userInfo:nil repeats:YES];
 
 
 
@@ -68,6 +71,13 @@
 	p2.steps = 2;
 	p2.backgroundColor = [UIColor grayColor];
 	[self.view addSubview:p2];
+}
+
+- (void)viewWillLayoutSubviews
+{
+    [super viewWillLayoutSubviews];
+    
+    [p setNeedsDisplay];
 }
 
 - (void)updateData {
